@@ -47,7 +47,7 @@ public class LoadController {
 
     @PostMapping("/memory")
     public synchronized Map<String, Object> allocateMemory() {
-        if (retainedMemory.size() > 64) {
+        if (retainedMemory.size() >= 64) {
             return Map.of(
                 "status", "limit reached",
                 "allocatedMb", retainedMemory.size()
