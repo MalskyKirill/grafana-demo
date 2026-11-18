@@ -46,3 +46,13 @@ datasources:
                   index: "logstash-*"
                   timeField: "@timestamp"
                   logMessageField: "log"
+
+            - name: Jaeger
+              uid: jaeger
+              type: jaeger
+              access: proxy
+              url: http://jaeger.monitoring.svc.cluster.local:16686
+              isDefault: false
+              editable: true
+
+
