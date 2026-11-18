@@ -86,7 +86,7 @@ alerting:
                                   )
                                   /
                                   sum by (job, instance) (
-                                    jvm_memory_max_bytes{job="grafana-demo",area="heap",id="G1 Old Gen"}
+                                    jvm_memory_max_bytes{job="grafana-demo",area="heap"}
                                   )
                               instant: true
                               range: false
