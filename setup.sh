@@ -17,7 +17,7 @@ for cmd in kubectl helm; do
   fi
 done
 
-for file in k8s/app.yaml k8s/prometheus.yaml k8s/grafana-values.yaml k8s/dashboards/java-application-monitoring.json; do
+for file in k8s/app.yaml k8s/prometheus.yaml k8s/grafana-values.yaml k8s/dashboards/java-application-monitoring.json k8s/dashboards/jvm-micrometer-4701.json; do
   if [[ ! -f "$file" ]]; then
     echo "[ERROR] Missing $file. Run this script from a full grafana-demo checkout." >&2
     exit 1
@@ -48,6 +48,13 @@ kubectl create configmap java-monitoring-dashboard \
   --dry-run=client -o yaml | kubectl apply -f -
 kubectl label configmap java-monitoring-dashboard -n monitoring grafana_dashboard=1 --overwrite
 
+info "Provisioning adapted JVM (Micrometer) dashboard 4701"
+kubectl create configmap jvm-micrometer-4701-dashboard \\
+  --namespace monitoring \\
+  --from-file=jvm-micrometer-4701.json=k8s/dashboards/jvm-micrometer-4701.json \\
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl label configmap jvm-micrometer-4701-dashboard -n monitoring grafana_dashboard=1 --overwrite
+
 info "3/3: Installing Grafana through Helm"
 helm repo add grafana-community https://grafana-community.github.io/helm-charts --force-update
 helm repo update grafana-community
@@ -63,7 +70,7 @@ kubectl get services -n monitoring
 cat <<'NEXT'
 
 Completed: Spring Boot, Prometheus and Grafana are deployed.
-The three-panel Java Application Monitoring dashboard is provisioned from a ConfigMap.
+Two dashboards are provisioned from ConfigMaps:\n  - Java Application Monitoring (Heap, CPU, GC)\n  - JVM (Micrometer) - 4701 (adapted; Prometheus datasource fixed)
 Jaeger and EFK were intentionally NOT started to conserve Killercoda memory.
 
 NEXT STEP (separate Killercoda terminal tab):
