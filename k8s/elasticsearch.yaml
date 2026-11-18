@@ -31,6 +31,9 @@ spec:
                         value: "false"
                       - name: ES_JAVA_OPTS
                         value: "-Xms512m -Xmx512m"
+                      # Lab-only: avoids host vm.max_map_count changes on Killercoda.
+                      - name: node.store.allow_mmap
+                        value: "false"
                   resources:
                       requests:
                           memory: "768Mi"
