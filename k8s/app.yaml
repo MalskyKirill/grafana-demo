@@ -33,6 +33,12 @@ spec:
                   env:
                       - name: JAVA_TOOL_OPTIONS
                         value: "-Xms128m -Xmx256m"
+
+                      - name: MANAGEMENT_TRACING_EXPORT_OTLP_ENABLED
+                        value: "true"
+
+                      - name: MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT
+                        value: "http://jaeger.monitoring.svc.cluster.local:4318/v1/traces"
                   resources:
                       requests:
                           memory: "384Mi"

@@ -1,0 +1,48 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: jaeger
+    namespace: monitoring
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: jaeger
+    template:
+        metadata:
+            labels:
+                app: jaeger
+        spec:
+            containers:
+                - name: jaeger
+                  image: cr.jaegertracing.io/jaegertracing/jaeger:2.23.0
+                  ports:
+                      - name: otlp-http
+                        containerPort: 4318
+                      - name: ui
+                        containerPort: 16686
+                  resources:
+                      requests:
+                          memory: "128Mi"
+                          cpu: "100m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: jaeger
+    namespace: monitoring
+spec:
+    selector:
+        app: jaeger
+    ports:
+        - name: otlp-http
+          port: 4318
+          targetPort: otlp-http
+        - name: ui
+          port: 16686
+          targetPort: ui
+    type: ClusterIP
