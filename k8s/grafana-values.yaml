@@ -1,0 +1,35 @@
+
+# Настройки Grafana для лабораторной работы
+
+replicas: 1
+
+# Временное хранилище для Killercoda
+persistence:
+    enabled: false
+
+# Доступ к Grafana внутри Kubernetes
+service:
+    type: ClusterIP
+    port: 80
+
+# Ограничения ресурсов
+resources:
+    requests:
+        memory: 128Mi
+        cpu: 50m
+    limits:
+        memory: 512Mi
+        cpu: 500m
+
+# Автоматическое подключение Prometheus
+datasources:
+    datasources.yaml:
+        apiVersion: 1
+        datasources:
+            - name: Prometheus
+              uid: prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus.monitoring.svc.cluster.local:9090
+              isDefault: true
+              editable: true
