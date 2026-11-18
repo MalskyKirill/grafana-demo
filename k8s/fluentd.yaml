@@ -64,6 +64,10 @@ spec:
                       runAsUser: 0
 
                   env:
+                      # Limit input to Spring Boot app logs in the monitoring namespace.
+                      - name: FLUENT_CONTAINER_TAIL_PATH
+                        value: "/var/log/containers/grafana-demo-*_monitoring_*.log"
+
                       - name: FLUENT_ELASTICSEARCH_HOST
                         value: "elasticsearch.monitoring.svc.cluster.local"
 
