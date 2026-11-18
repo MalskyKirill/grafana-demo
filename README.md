@@ -275,7 +275,5 @@ docker run --rm -p 8080:8080 grafana-demo:local
 
 ## Ссылки
 
-- [Репозиторий GitHub](https://github.com/MalskyKirill/grafana-demo)
 - [Docker Hub: образ grafana-demo](https://hub.docker.com/r/malskykirill/grafana-demo)
 - [Исходный дашборд JVM (Micrometer), ID 4701](https://grafana.com/grafana/dashboards/4701/)
-- [Killercoda Kubernetes Playground](https://killercoda.com/playgrounds/scenario/kubernetes)
