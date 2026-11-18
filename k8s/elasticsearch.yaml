@@ -1,0 +1,66 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: elasticsearch
+    namespace: monitoring
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: elasticsearch
+    template:
+        metadata:
+            labels:
+                app: elasticsearch
+        spec:
+            securityContext:
+                fsGroup: 1000
+            containers:
+                - name: elasticsearch
+                  image: docker.elastic.co/elasticsearch/elasticsearch:8.19.25
+                  ports:
+                      - name: http
+                        containerPort: 9200
+                  env:
+                      - name: discovery.type
+                        value: "single-node"
+                      - name: xpack.security.enabled
+                        value: "false"
+                      - name: xpack.security.autoconfiguration.enabled
+                        value: "false"
+                      - name: ES_JAVA_OPTS
+                        value: "-Xms512m -Xmx512m"
+                  resources:
+                      requests:
+                          memory: "768Mi"
+                          cpu: "250m"
+                      limits:
+                          memory: "1536Mi"
+                          cpu: "1000m"
+                  startupProbe:
+                      httpGet:
+                          path: /
+                          port: http
+                      periodSeconds: 5
+                      failureThreshold: 36
+                  volumeMounts:
+                      - name: data
+                        mountPath: /usr/share/elasticsearch/data
+            volumes:
+                - name: data
+                  emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: elasticsearch
+    namespace: monitoring
+spec:
+    selector:
+        app: elasticsearch
+    ports:
+        - name: http
+          port: 9200
+          targetPort: http
+    type: ClusterIP
