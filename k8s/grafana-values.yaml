@@ -56,3 +56,76 @@ datasources:
               editable: true
 
 
+alerting:
+    rules.yaml:
+        apiVersion: 1
+        groups:
+            - orgId: 1
+              name: JVM Alerts
+              folder: Monitoring
+              interval: 10s
+              rules:
+                  - uid: jvm_heap_80
+                    title: JVM Heap Usage Above 80%
+                    condition: B
+                    data:
+                        - refId: A
+                          datasourceUid: prometheus
+                          relativeTimeRange:
+                              from: 60
+                              to: 0
+                          model:
+                              datasource:
+                                  type: prometheus
+                                  uid: prometheus
+                              editorMode: code
+                              expr: |
+                                  100 *
+                                  sum by (job, instance) (
+                                    jvm_memory_used_bytes{job="grafana-demo",area="heap"}
+                                  )
+                                  /
+                                  sum by (job, instance) (
+                                    jvm_memory_max_bytes{job="grafana-demo",area="heap",id="G1 Old Gen"}
+                                  )
+                              instant: true
+                              range: false
+                              intervalMs: 1000
+                              maxDataPoints: 43200
+                              refId: A
+
+                        - refId: B
+                          datasourceUid: __expr__
+                          relativeTimeRange:
+                              from: 60
+                              to: 0
+                          model:
+                              datasource:
+                                  type: __expr__
+                                  uid: __expr__
+                              expression: A
+                              type: threshold
+                              conditions:
+                                  - evaluator:
+                                        type: gt
+                                        params: [80]
+                                    operator:
+                                        type: and
+                                    query:
+                                        params: [B]
+                                    reducer:
+                                        type: last
+                                        params: []
+                                    type: query
+                              intervalMs: 1000
+                              maxDataPoints: 43200
+                              refId: B
+
+                    for: 30s
+                    noDataState: NoData
+                    execErrState: Error
+                    isPaused: false
+                    annotations:
+                        summary: JVM Heap usage exceeded 80%
+                    labels:
+                        severity: warning
