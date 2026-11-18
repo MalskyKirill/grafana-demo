@@ -62,7 +62,8 @@ kubectl get services -n monitoring
 
 cat <<'NEXT'
 
-Completed: Spring Boot, Prometheus and Grafana are deployed.\nThe three-panel Java Application Monitoring dashboard is provisioned from a ConfigMap.
+Completed: Spring Boot, Prometheus and Grafana are deployed.
+The three-panel Java Application Monitoring dashboard is provisioned from a ConfigMap.
 Jaeger and EFK were intentionally NOT started to conserve Killercoda memory.
 
 NEXT STEP (separate Killercoda terminal tab):
