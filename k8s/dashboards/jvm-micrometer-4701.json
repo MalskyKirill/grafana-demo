@@ -313,7 +313,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "100 * sum(jvm_memory_used_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\"}) / sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\",id=\"G1 Old Gen\"})",
+          "expr": "100 * sum(jvm_memory_used_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\"}) / sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "",
@@ -809,7 +809,7 @@
           "step": 2400
         },
         {
-          "expr": "sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\",id=\"G1 Old Gen\"})",
+          "expr": "sum(jvm_memory_max_bytes{application=\"$application\",instance=\"$instance\",area=\"heap\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "max",
