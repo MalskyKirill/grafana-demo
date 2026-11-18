@@ -17,7 +17,7 @@ for cmd in kubectl helm; do
   fi
 done
 
-for file in k8s/app.yaml k8s/prometheus.yaml k8s/grafana-values.yaml; do
+for file in k8s/app.yaml k8s/prometheus.yaml k8s/grafana-values.yaml k8s/dashboards/java-application-monitoring.json; do
   if [[ ! -f "$file" ]]; then
     echo "[ERROR] Missing $file. Run this script from a full grafana-demo checkout." >&2
     exit 1
@@ -41,6 +41,13 @@ info "2/3: Deploying Prometheus"
 kubectl apply -f k8s/prometheus.yaml
 kubectl rollout status deployment/prometheus --namespace monitoring --timeout=240s
 
+info "Provisioning JVM dashboard as a Kubernetes ConfigMap"
+kubectl create configmap java-monitoring-dashboard \
+  --namespace monitoring \
+  --from-file=java-application-monitoring.json=k8s/dashboards/java-application-monitoring.json \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl label configmap java-monitoring-dashboard -n monitoring grafana_dashboard=1 --overwrite
+
 info "3/3: Installing Grafana through Helm"
 helm repo add grafana-community https://grafana-community.github.io/helm-charts --force-update
 helm repo update grafana-community
@@ -55,7 +62,7 @@ kubectl get services -n monitoring
 
 cat <<'NEXT'
 
-Completed: Spring Boot, Prometheus and Grafana are deployed.
+Completed: Spring Boot, Prometheus and Grafana are deployed.\nThe three-panel Java Application Monitoring dashboard is provisioned from a ConfigMap.
 Jaeger and EFK were intentionally NOT started to conserve Killercoda memory.
 
 NEXT STEP (separate Killercoda terminal tab):
