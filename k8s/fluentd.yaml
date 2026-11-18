@@ -1,0 +1,108 @@
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    name: fluentd
+    namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: grafana-demo-fluentd
+rules:
+    - apiGroups: [""]
+      resources: ["pods", "namespaces"]
+      verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    name: grafana-demo-fluentd
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: grafana-demo-fluentd
+subjects:
+    - kind: ServiceAccount
+      name: fluentd
+      namespace: monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: fluentd-parser
+    namespace: monitoring
+data:
+    tail_container_parse.conf: |
+        <parse>
+          @type cri
+        </parse>
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+    name: fluentd
+    namespace: monitoring
+spec:
+    selector:
+        matchLabels:
+            app: fluentd
+    template:
+        metadata:
+            labels:
+                app: fluentd
+        spec:
+            serviceAccountName: fluentd
+            nodeSelector:
+                kubernetes.io/os: linux
+
+            containers:
+                - name: fluentd
+                  image: fluent/fluentd-kubernetes-daemonset:v1.19.3-debian-elasticsearch8-1.1
+
+                  securityContext:
+                      runAsUser: 0
+
+                  env:
+                      - name: FLUENT_ELASTICSEARCH_HOST
+                        value: "elasticsearch.monitoring.svc.cluster.local"
+
+                      - name: FLUENT_ELASTICSEARCH_PORT
+                        value: "9200"
+
+                      - name: FLUENT_ELASTICSEARCH_SCHEME
+                        value: "http"
+
+                      - name: FLUENTD_SYSTEMD_CONF
+                        value: "disable"
+
+                      - name: FLUENTD_PROMETHEUS_CONF
+                        value: "disable"
+
+                  resources:
+                      requests:
+                          memory: "128Mi"
+                          cpu: "100m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+
+                  volumeMounts:
+                      - name: varlog
+                        mountPath: /var/log
+                        readOnly: false
+
+                      - name: parser-config
+                        mountPath: /fluentd/etc/tail_container_parse.conf
+                        subPath: tail_container_parse.conf
+                        readOnly: true
+
+            volumes:
+                - name: varlog
+                  hostPath:
+                      path: /var/log
+                      type: Directory
+
+                - name: parser-config
+                  configMap:
+                      name: fluentd-parser
