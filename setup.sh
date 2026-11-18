@@ -49,9 +49,9 @@ kubectl create configmap java-monitoring-dashboard \
 kubectl label configmap java-monitoring-dashboard -n monitoring grafana_dashboard=1 --overwrite
 
 info "Provisioning adapted JVM (Micrometer) dashboard 4701"
-kubectl create configmap jvm-micrometer-4701-dashboard \\
-  --namespace monitoring \\
-  --from-file=jvm-micrometer-4701.json=k8s/dashboards/jvm-micrometer-4701.json \\
+kubectl create configmap jvm-micrometer-4701-dashboard \
+  --namespace monitoring \
+  --from-file=jvm-micrometer-4701.json=k8s/dashboards/jvm-micrometer-4701.json \
   --dry-run=client -o yaml | kubectl apply -f -
 kubectl label configmap jvm-micrometer-4701-dashboard -n monitoring grafana_dashboard=1 --overwrite
 
