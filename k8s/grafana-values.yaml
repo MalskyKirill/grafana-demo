@@ -129,3 +129,11 @@ alerting:
                         summary: JVM Heap usage exceeded 80%
                     labels:
                         severity: warning
+
+# Auto-import JVM dashboards from ConfigMaps labelled grafana_dashboard=1.
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "1"
+    searchNamespace: monitoring
