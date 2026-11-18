@@ -22,6 +22,7 @@ resources:
         cpu: 500m
 
 # Автоматическое подключение Prometheus
+
 datasources:
     datasources.yaml:
         apiVersion: 1
@@ -33,3 +34,15 @@ datasources:
               url: http://prometheus.monitoring.svc.cluster.local:9090
               isDefault: true
               editable: true
+
+            - name: Elasticsearch
+              uid: elasticsearch
+              type: elasticsearch
+              access: proxy
+              url: http://elasticsearch.monitoring.svc.cluster.local:9200
+              isDefault: false
+              editable: true
+              jsonData:
+                  index: "logstash-*"
+                  timeField: "@timestamp"
+                  logMessageField: "log"
